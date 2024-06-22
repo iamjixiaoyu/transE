@@ -1,10 +1,11 @@
 from src.load_data import load_dict
 from src.load_data import load_data
+from src.load_data import load_all_data
 
 
 if __name__ == '__main__':
-    dirname = '../data/FB15k'
-    train_data = load_data(dirname, 'train')
+    fb15k_dir = '../data/FB15k'
+    load_all_data(fb15k_dir)
 
 
 
