@@ -27,19 +27,29 @@ def load_dict(path):
 
 
 # 输入参数：
-#   (1)文件路径；
-#   (2)实体name2id字典；
-#   (3)关系name2id字典
+#   (1)数据集顶层文件夹
+#   (2)模式mode：'train', 'valid', 'test'
 # 输出参数：
-#   三元组列表
-def load_data(data_path, entity2id_dict, relation2id_dict):
+#   (1)实体集
+#   (2)关系集
+#   (3)三元组列表
+def load_data(data_dir, mode='train'):
     # 判断文件夹是否存在
-    if not os.path.exists(data_path):
+    if not os.path.exists(data_dir):
         print('文件夹路径错误！请确认路径是否存在')
         return None
-
+    # 获取实体和关系name2id字典文件路径
+    entity2id_path = os.path.join(os.path.abspath(data_dir), 'entity2id.txt')
+    relation2id_path = os.path.join(os.path.abspath(data_dir), 'relation2id.txt')
+    # 生成实体和关系name2id字典
+    entity2id_dict = load_dict(entity2id_path)
+    relation2id_dict = load_dict(relation2id_path)
+    # 定义实体集和关系集
+    entity_set, relation_set = set(), set()
     # 定义名称型的三元组列表
     triple_list = []
+    # 获取训练、验证、测试集文件路径
+    data_path = os.path.join(os.path.abspath(data_dir), mode + '.txt')
     # 按行读取文件内容，并根据文件内容向列表中添加数据
     for line in codecs.open(data_path, 'r').readlines():
         # 每一行的文本结构为：head_name\ttail_name\trelation_name
@@ -52,48 +62,15 @@ def load_data(data_path, entity2id_dict, relation2id_dict):
             head_id = entity2id_dict[head_name]
             tail_id = entity2id_dict[tail_name]
             relation_id = relation2id_dict[relation_name]
+            entity_set.add(head_id)
+            entity_set.add(tail_id)
+            relation_set.add(relation_id)
             triple_list.append([head_id, tail_id, relation_id])
-    # 返回名称型的三元组列表
-    return triple_list
+    # 返回数字型的实体集、关系集和三元组列表
+    return entity_set, relation_set, triple_list
 
 
-# 输入参数：数据集文件夹
-# 输出参数：
-#   (1)训练集三元组列表
-#   (2)验证集三元组列表
-#   (3)测试集三元组列表
-#   (4)实体name2id字典
-#   (5)关系name2id字典
-def load_all_data(dirname):
-    # 获取数据集文件夹的绝对路径
-    dir_path = os.path.abspath(dirname)
-    # 训练集文件路径
-    train_data_path = os.path.join(dir_path, 'train.txt')
-    # 验证集文件路径
-    valid_data_path = os.path.join(dir_path, 'valid.txt')
-    # 测试集文件路径
-    test_data_path = os.path.join(dir_path, 'test.txt')
-    # 实体name2id字典文件路径
-    entity2id_dict_path = os.path.join(dir_path, 'entity2id.txt')
-    # 关系name2id字典文件路径
-    relation2id_dict_path = os.path.join(dir_path, 'relation2id.txt')
-    # 获取实体name2id字典
-    entity2id_dict = load_dict(entity2id_dict_path)
-    print('实体字典加载完成：', len(entity2id_dict))
-    # 获取关系name2id字典
-    relation2id_dict = load_dict(relation2id_dict_path)
-    print('关系字典加载完成：', len(relation2id_dict))
-    # 获取训练集三元组列表
-    train_list = load_data(train_data_path, entity2id_dict, relation2id_dict)
-    print('训练集加载完成：', len(train_list))
-    # 获取验证集三元组列表
-    valid_list = load_data(valid_data_path, entity2id_dict, relation2id_dict)
-    print('验证集加载完成：', len(valid_list))
-    # 获取测试集三元组列表
-    test_list = load_data(test_data_path, entity2id_dict, relation2id_dict)
-    print('测试集加载完成：', len(test_list))
-    # 返回全部三元组列表与字典
-    return train_list, valid_list, test_list, entity2id_dict, relation2id_dict
+
 
 
 
