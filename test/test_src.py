@@ -8,7 +8,7 @@ if __name__ == '__main__':
     lr = 0.01
     margin = 1.0
     norm = 1
-    epochs = 500
+    epochs = 1
     model = TransE(entity_set, relation_set, train_triple_list, embed_dim, lr, margin, norm)
     model.init_embeddings()
     model.train(epochs)
